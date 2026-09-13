@@ -1,0 +1,66 @@
+[tools]
+gitleaks = "v8.18.4"
+"go:github.com/google/addlicense" = "v1.2.0"
+trivy = "v0.74.0"
+helm = "v3.14.0"
+actionlint = "latest"
+
+[tasks.install]
+description = "Install tools, hook up hooks, and prepare environment"
+run = """
+prek install
+"""
+
+[tasks.compose]
+description = "Run Docker Compose for local lab"
+run = """
+docker compose up -d
+"""
+
+[tasks.down]
+description = "Stop Docker Compose"
+run = """
+docker compose down
+"""
+
+[tasks.logs]
+description = "View Docker Compose logs"
+run = """
+docker compose logs -f
+"""
+
+[tasks.prek]
+description = "Run pre-commit hooks on all files"
+run = """
+prek run --all-files
+"""
+
+[tasks.helm-lint]
+description = "Lint Helm chart"
+run = """
+helm lint chart/
+"""
+
+[tasks.helm-template]
+description = "Render Helm chart templates"
+run = """
+helm template lab-service chart/
+"""
+
+[tasks.trivy-fs]
+description = "Run Trivy on the file system"
+run = """
+trivy fs .
+"""
+
+[tasks.lab-up]
+description = "Spin up the lab service using scripts/lab-up.sh"
+run = """
+./scripts/lab-up.sh
+"""
+
+[tasks.lab-down]
+description = "Tear down the lab service using scripts/lab-down.sh"
+run = """
+./scripts/lab-down.sh
+"""
