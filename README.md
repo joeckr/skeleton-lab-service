@@ -1,4 +1,4 @@
-# skeleton-lab
+# skeleton-lab-service
 
 A starter skeleton repository tailored for rapid experimentation, prototyping, and testing of services in a lab environment (local Docker, Kubernetes, and OpenShift).
 
