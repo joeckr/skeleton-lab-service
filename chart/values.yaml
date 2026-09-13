@@ -1,0 +1,46 @@
+app:
+  name: lab-service
+  image: nginxinc/nginx-unprivileged
+  tag: alpine
+  pullPolicy: Always
+  replicaCount: 1
+  port: 8080
+  env: "lab"
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+service:
+  name: lab-service
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  name: lab-ingress
+  host: "lab.local"
+  route: "false" # Set to "true" to generate an OpenShift Route instead of Ingress
+  className: "nginx"
+  path: /
+  pathType: "Prefix"
