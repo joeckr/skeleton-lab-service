@@ -4,6 +4,9 @@ gitleaks = "v8.18.4"
 trivy = "v0.74.0"
 helm = "v3.14.0"
 actionlint = "latest"
+shellcheck = "latest"
+zizmor = "latest"
+
 
 [tasks.install]
 description = "Install tools, hook up hooks, and prepare environment"
@@ -51,16 +54,4 @@ helm template lab-service chart/
 description = "Run Trivy on the file system"
 run = """
 trivy fs .
-"""
-
-[tasks.lab-up]
-description = "Spin up the lab service using scripts/lab-up.sh"
-run = """
-./scripts/lab-up.sh
-"""
-
-[tasks.lab-down]
-description = "Tear down the lab service using scripts/lab-down.sh"
-run = """
-./scripts/lab-down.sh
 """
