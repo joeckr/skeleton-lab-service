@@ -1,0 +1,52 @@
+amends "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.0.1/hk@2.0.1#/Builtins.pkl"
+
+steps {
+    ["no-commit-to-branch"] = Builtins.no_commit_to_branch
+    ["trailing-whitespace"] = Builtins.trailing_whitespace
+    ["end-of-file-fixer"] = Builtins.newlines
+    ["check-yaml"] = new Step {
+        glob = Regex(#".*\.ya?ml$"#)
+        exclude = Regex(#"^(.*templates/.*|charts/.*|Helm/.*)$"#)
+        check = "python3 -c 'import yaml; [yaml.safe_load(open(f)) for f in \"{{files}}\".split()]'"
+    }
+    ["check-toml"] = new Step {
+        glob = Regex(#".*\.toml$"#)
+        check = "python3 -c 'import tomli; [tomli.load(open(f, \"rb\")) for f in \"{{files}}\".split()]'"
+    }
+    ["check-json"] = new Step {
+        glob = Regex(#".*\.json$"#)
+        check = "python3 -c 'import json; [json.load(open(f)) for f in \"{{files}}\".split()]'"
+    }
+    ["forbid-submodules"] = Builtins.forbid_submodules
+    ["check-merge-conflict"] = Builtins.check_merge_conflict
+    ["check-added-large-files"] = Builtins.check_added_large_files
+    ["gitleaks-system"] = new Step {
+        check = "mise exec -- gitleaks protect --verbose --redact --staged"
+    }
+    ["addlicense"] = new Step {
+        glob = Regex(#"(.*\.py$|.*\.go$|.*\.js$|.*\.rs$)"#)
+        check = "mise exec -- addlicense -c \"Joseph Christopher King\" -l mit -v {{files}}"
+    }
+    ["helm-lint"] = new Step {
+        glob = Regex(#"^.*(Chart\.yaml|values\.yaml|templates/.*\.yaml)$"#)
+        check = "mise exec -- helm lint chart/"
+    }
+    ["actionlint"] = (Builtins.actionlint) {
+        check = "mise exec -- actionlint {{files}}"
+    }
+    ["zizmor"] = (Builtins.zizmor) {
+        check = "mise exec -- zizmor {{files}}"
+    }
+    ["shellcheck"] = (Builtins.shellcheck) {
+        check = "mise exec -- shellcheck {{files}}"
+    }
+}
+
+hooks {
+    ["commit-msg"] {
+        steps {
+            ["conventional_commit"] = Builtins.check_conventional_commit
+        }
+    }
+}
