@@ -17,17 +17,15 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
 - **Docker Compose (`docker-compose.yml`)**:
   - Spin up and test the lab service locally in seconds without requiring a cluster.
   - Pre-configured with port forwarding, and healthchecks.
-- **Environment & Tooling (`mise` & `prek`)**:
-  - `mise.toml`: Tool version management (`helm`, `gitleaks`, `addlicense`, `trivy`, `actionlint`) and convenient task aliases.
-  - `prek.toml`: Fast git hooks enforcing Conventional Commits, branch protection, secrets scanning, Helm linting, workflow linting (`actionlint`), and security audits (`zizmor`).
+- **Environment & Tooling (`mise` & `hk`)**:
+  - `mise.toml`: Tool version management (`helm`, `betterleaks`, `addlicense`, `trivy`, `actionlint`, `shellcheck`, `zizmor`, `hk`, `pkl`, `tombi`, `yamllint`) and convenient task aliases.
+  - `hk.pkl`: Fast git hooks and project checks enforcing Conventional Commits, branch protection, secret scanning (`betterleaks`), Helm linting, workflow linting (`actionlint`), security audits (`zizmor`), YAML linting (`yamllint`), TOML linting (`tombi`), shell checking (`shellcheck`), and license checks (`addlicense`).
 - **GitHub Actions CI (`.github/workflows/`)**:
   - Reusable workflows powered by [`joeckr/ci-templates`](https://github.com/joeckr/ci-templates):
-    - `actionlint`: Lints GitHub Actions workflow syntax.
-    - `zizmor`: Security audit of GitHub Actions workflows.
-    - `commitlint`: Enforces Conventional Commits specification.
-    - `gitleaks`: Scans commits and PRs for secret leaks.
-    - `helm`: Packages and publishes Helm charts to GitHub Container Registry (GHCR) as OCI artifacts (with PR dry-run preview).
-    - `semantic`: Automated Semantic Versioning, git tagging, release notes, and `Chart.yaml` version syncing (with PR dry-run preview).
+    - `lint.yml`: Lints GitHub Actions workflow syntax (`actionlint`), Conventional Commits (`commitlint`), and shell scripts (`shellcheck`).
+    - `security.yml`: Scans commits and PRs for secret leaks (`betterleaks`) and workflow security audits (`zizmor`).
+    - `release.yml`: Automated Semantic Versioning, git tagging, release notes, `Chart.yaml` version syncing (`semantic`), and packaging/publishing Helm charts to GitHub Container Registry (GHCR) as OCI artifacts.
+    - `test_release.yml`: PR dry-run preview for Semantic Versioning and Helm chart packaging.
 
 ---
 
@@ -37,14 +35,10 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
 .
 ├── .github/
 │   └── workflows/
-│       ├── actionlint.yml       # Lints workflow files
-│       ├── commitlint.yml       # Validates conventional commit messages
-│       ├── gitleaks.yml         # Scans for credential leaks
-│       ├── helm.yml             # Packages and pushes Helm chart to GHCR
-│       ├── semantic.yml         # SemVer tagging and GitHub releases
-│       ├── test_helm.yml        # PR dry-run test for Helm packaging
-│       ├── test_semantic.yml    # PR dry-run test for Semantic Versioning
-│       └── zizmor.yml           # Security audit for workflows
+│       ├── lint.yml             # Lints workflows, commits, and shell scripts
+│       ├── security.yml         # Scans for secrets and audits workflow security
+│       ├── release.yml          # Semantic release and Helm chart publishing to GHCR
+│       └── test_release.yml     # PR dry-run test for releases and chart packaging
 ├── chart/
 │   ├── Chart.yaml               # Helm chart definition
 │   ├── values.yaml              # Default configuration values
@@ -55,22 +49,14 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
 │       ├── deployment.yaml      # Workload deployment
 │       ├── service.yaml         # Kubernetes Service
 │       ├── ingress.yaml         # Kubernetes Ingress
-│       ├── route.yaml           # OpenShift Route
-│       ├── pvc.yaml             # PersistentVolumeClaim
-│       └── mount-config-map.yaml# ConfigMap resource
+│       └── route.yaml           # OpenShift Route
 ├── config/
 │   └── config.txt               # Local configuration file for docker compose
 ├── scripts/
-│   ├── setup.sh                 # Environment check and hook installation
-│   ├── lab-up.sh                # Start local compose service
-│   ├── lab-down.sh              # Stop local compose service
-│   ├── helm-lint.sh             # Lint chart
-│   ├── helm-template.sh         # Render chart templates locally
-│   ├── install.sh               # Install/upgrade chart into a cluster
-│   └── uninstall.sh             # Uninstall release from cluster
+│   └── template.sh              # Helper script placeholder
 ├── docker-compose.yml           # Local lab service definition
+├── hk.pkl                       # hk git hooks and checks configuration
 ├── mise.toml                    # Mise tools and tasks
-├── prek.toml                    # Prek git hooks
 └── README.md
 ```
 
@@ -80,14 +66,19 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
 
 ### 1. Bootstrap Local Environment
 
-Ensure [`mise`](https://mise.jdx.dev/) and [`prek`](https://github.com/j178/prek) are installed:
+Ensure [`mise`](https://mise.jdx.dev/) is installed, then prepare the environment and install git hooks:
 
 ```bash
-# Verify environment and install git hooks
-./scripts/setup.sh
-
-# Or using mise directly
 mise run install
+```
+
+This installs all declared tools via `mise` and hooks up git hooks using `hk`.
+
+To run all checks across the repository at any time:
+
+```bash
+mise run check
+# or: mise run hk
 ```
 
 ### 2. Local Experimentation (Docker Compose)
@@ -96,19 +87,16 @@ Start the lab service locally:
 
 ```bash
 # Start container in detached mode
-./scripts/lab-up.sh
-# or: mise run compose
+mise run compose
+# or: docker compose up -d
 
 # Check status and logs
 docker compose ps
 mise run logs
 
 # Stop container
-./scripts/lab-down.sh
-# or: mise run down
-
-# Stop container and clean test volumes
-./scripts/lab-down.sh -v
+mise run down
+# or: docker compose down
 ```
 
 By default, the service listens at `http://localhost:8080`.
@@ -118,30 +106,27 @@ By default, the service listens at `http://localhost:8080`.
 #### Lint and Template Locally
 ```bash
 # Lint the chart
-./scripts/helm-lint.sh
-# or: mise run helm-lint
+mise run helm-lint
+# or: helm lint chart/
 
 # Render manifests to stdout
-./scripts/helm-template.sh
-# or: mise run helm-template
+mise run helm-template
+# or: helm template lab-service chart/
 
 # Test OpenShift Route rendering
-helm template lab-service chart/ --set ingress.enabled=true --set ingress.route=true
+helm template lab-service chart/ --set ingress.enabled=true --set ingress.route="true"
 ```
 
 #### Deploy to a Cluster
 ```bash
 # Deploy to namespace 'lab-service'
-./scripts/install.sh
+helm upgrade --install lab-service chart/ --namespace lab-service --create-namespace
 
 # Deploy with custom namespace and values
-NAMESPACE=my-test ./scripts/install.sh --set app.image=quay.io/my/service --set app.tag=v1.0.0
+helm upgrade --install lab-service chart/ --namespace my-test --create-namespace --set app.image=quay.io/my/service --set app.tag=v1.0.0
 
 # Preview changes with dry-run
-./scripts/install.sh --dry-run
-
-# Uninstall
-./scripts/uninstall.sh
+helm upgrade --install lab-service chart/ --namespace lab-service --dry-run
 ```
 
 ---
@@ -154,7 +139,7 @@ Commits must follow the [Conventional Commits](https://www.conventionalcommits.o
 - `feat!: breaking change` -> Triggers a **major** release.
 - `chore:`, `docs:`, `ci:`, `test:`, `refactor:` -> Maintenance changes (no release bump).
 
-Upon merging to `main`, the `semantic.yml` workflow automatically computes the next version, updates `version` and `appVersion` in `chart/Chart.yaml`, creates a Git tag, and publishes a GitHub Release. The `helm.yml` workflow packages the chart and pushes it to GHCR.
+Upon merging to `main`, the `release.yml` workflow automatically computes the next version, updates `version` and `appVersion` in `chart/Chart.yaml`, creates a Git tag, publishes a GitHub Release, and packages and pushes the Helm chart to GHCR.
 
 ## Support
 
