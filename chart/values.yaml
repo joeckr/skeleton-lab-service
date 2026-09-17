@@ -40,7 +40,7 @@ ingress:
   enabled: false
   name: lab-ingress
   host: "lab.local"
-  route: "false" # Set to "true" to generate an OpenShift Route instead of Ingress
+  route: "false"  # Set to "true" to generate an OpenShift Route instead of Ingress
   className: "nginx"
   path: /
   pathType: "Prefix"

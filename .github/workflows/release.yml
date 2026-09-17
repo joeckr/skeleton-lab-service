@@ -2,8 +2,8 @@ name: Publish Helm Chart
 
 on:
   push:
-    branches: [ "main" ]
-    tags: [ "v*" ]
+    branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 
 jobs:
@@ -11,10 +11,10 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: joeckr/ci-templates/.github/workflows/push-helm-ghcr.yml@d9f1db3885add93d613b069e944f3fd5a4a26281 # v1.1.1
+    uses: joeckr/ci-templates/.github/workflows/push-helm-ghcr.yml@d9f1db3885add93d613b069e944f3fd5a4a26281  # v1.1.1
     with:
       charts-dir: 'chart'
   release:
     permissions:
       contents: write
-    uses: joeckr/ci-templates/.github/workflows/semantic.yml@48916bb3c57520fe2d7b179ac228b29b0d1c83cb # v1.3.0
+    uses: joeckr/ci-templates/.github/workflows/semantic.yml@48916bb3c57520fe2d7b179ac228b29b0d1c83cb  # v1.3.0

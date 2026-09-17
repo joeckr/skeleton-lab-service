@@ -1,17 +1,20 @@
 [tools]
-gitleaks = "v8.18.4"
+betterleaks = "latest"
 "go:github.com/google/addlicense" = "v1.2.0"
 trivy = "v0.74.0"
 helm = "v3.14.0"
-actionlint = "latest"
+actionlint = "v1.7.1"
 shellcheck = "latest"
 zizmor = "latest"
-
+hk = "latest"
+pkl = "latest"
+tombi = "latest"
+yamllint = "latest"
 
 [tasks.install]
 description = "Install tools, hook up hooks, and prepare environment"
 run = """
-prek install
+hk install --mise
 """
 
 [tasks.compose]
@@ -32,10 +35,11 @@ run = """
 docker compose logs -f
 """
 
-[tasks.prek]
-description = "Run pre-commit hooks on all files"
+[tasks.hk]
+description = "Run hk checks on all files"
+alias = "check"
 run = """
-prek run --all-files
+hk check --all
 """
 
 [tasks.helm-lint]
