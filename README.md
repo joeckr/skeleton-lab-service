@@ -43,8 +43,6 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
 │   ├── Chart.yaml               # Helm chart definition
 │   ├── values.yaml              # Default configuration values
 │   ├── .helmignore              # Ignore rules for chart packaging
-│   ├── config/
-│   │   └── config.txt           # Config file mounted into containers
 │   └── templates/
 │       ├── deployment.yaml      # Workload deployment
 │       ├── service.yaml         # Kubernetes Service
