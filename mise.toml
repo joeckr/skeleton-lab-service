@@ -18,21 +18,35 @@ hk install --mise
 """
 
 [tasks.compose]
-description = "Run Docker Compose for local lab"
+description = "Run Podman Compose for local lab"
 run = """
-docker compose up -d
+podman compose up -d
+"""
+
+[tasks.play]
+description = "Run Podman Play for local helm chart testing"
+depends = ["helm-template"]
+run = """
+podman play kube rendered.yaml
 """
 
 [tasks.down]
-description = "Stop Docker Compose"
+description = "Stop Podman Compose"
 run = """
-docker compose down
+podman compose down
+"""
+
+[tasks.downplay]
+description = "Run Podman Play for local helm chart testing"
+depends = ["helm-dep"]
+run = """
+podman play kube rendered.yaml --down
 """
 
 [tasks.logs]
-description = "View Docker Compose logs"
+description = "View Podman Compose logs"
 run = """
-docker compose logs -f
+podman compose logs -f
 """
 
 [tasks.hk]
@@ -44,14 +58,22 @@ hk check --all
 
 [tasks.helm-lint]
 description = "Lint Helm chart"
+depends = ["helm-dep"]
 run = """
 helm lint chart/
 """
 
 [tasks.helm-template]
 description = "Render Helm chart templates"
+depends = ["helm-dep"]
 run = """
-helm template lab-service chart/
+helm template test chart/ > rendered.yaml
+"""
+
+[tasks.helm-dep]
+description = "Build Helm chart dependencies"
+run = """
+helm dependency build chart/
 """
 
 [tasks.trivy-fs]
