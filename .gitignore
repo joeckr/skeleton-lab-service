@@ -24,3 +24,6 @@ Thumbs.db
 # Local Experimentation Artifacts
 *.log
 .discovered_charts.txt
+
+# Helm charts
+rendered.yaml
