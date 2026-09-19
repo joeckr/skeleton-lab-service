@@ -14,7 +14,7 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
   - Dual support for standard Kubernetes Ingress and OpenShift Routes (`ingress.route: "true"`).
   - Secure defaults: non-root execution (`runAsNonRoot: true`), `RuntimeDefault` seccomp profile, and dropping `ALL` capabilities.
   - Master and control-plane node tolerations for compact lab clusters.
-- **Docker Compose (`docker-compose.yml`)**:
+- **Compose (`compose.yml`)**:
   - Spin up and test the lab service locally in seconds without requiring a cluster.
   - Pre-configured with port forwarding, and healthchecks.
 - **Environment & Tooling (`mise` & `hk`)**:
@@ -52,7 +52,7 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
 │   └── config.txt               # Local configuration file for docker compose
 ├── scripts/
 │   └── template.sh              # Helper script placeholder
-├── docker-compose.yml           # Local lab service definition
+├── compose.yml                  # Local lab service definition
 ├── hk.pkl                       # hk git hooks and checks configuration
 ├── mise.toml                    # Mise tools and tasks
 └── README.md
