@@ -33,7 +33,7 @@ spec:
           {{- end }}
           ports:
             - containerPort: {{ .Values.app.port }}
-              name: {{ .Values.template.name }}
+              name: {{ .Values.app.name }}
           env:
             - name: ENV
               value: {{ .Values.app.env | quote }}

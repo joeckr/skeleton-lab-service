@@ -33,7 +33,7 @@ podman compose down
 description = "Run Podman Play for local helm chart testing"
 depends = ["helm-t"]
 run = """
-podman play kube rendered.yaml  --publish-all
+podman play kube rendered.yaml --publish-all
 """
 
 [tasks.play-d]

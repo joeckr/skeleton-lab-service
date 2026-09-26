@@ -10,7 +10,6 @@ services:
       - LOG_LEVEL=debug
     volumes:
       - lab-data:/tmp/data
-      - ./config/config.txt:/app/config.txt:ro
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/ || exit 1"]
       interval: 15s
