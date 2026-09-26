@@ -10,9 +10,6 @@ app:
     limits:
       cpu: 250m
       memory: 256Mi
-    requests:
-      cpu: 50m
-      memory: 64Mi
   securityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: false
@@ -38,9 +35,9 @@ service:
   port: 8080
 
 ingress:
-  enabled: false
+  enabled: true
   name: lab-ingress
-  host: "lab.local"
+  host: "test.joeckr.dev" # add your own domain
   route: "false"  # Set to "true" to generate an OpenShift Route instead of Ingress
   className: "nginx"
   path: /

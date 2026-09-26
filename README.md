@@ -48,8 +48,6 @@ A starter skeleton repository tailored for rapid experimentation, prototyping, a
 │       ├── service.yaml         # Kubernetes Service
 │       ├── ingress.yaml         # Kubernetes Ingress
 │       └── route.yaml           # OpenShift Route
-├── config/
-│   └── config.txt               # Local configuration file for docker compose
 ├── scripts/
 │   └── template.sh              # Helper script placeholder
 ├── compose.yml                  # Local lab service definition
@@ -172,16 +170,16 @@ Before deploying to an actual Kubernetes cluster, you can test the rendered Kube
 mise run play
 
 # Teardown the played pod and resources
-mise run downplay
+mise run play-d
 ```
 
 **How `mise run play` works:**
-1. Triggers the dependent task `mise run helm-template`, which executes:
+1. Triggers the dependent task `mise run helm-t`, which executes:
    ```sh
    helm dependency build chart/
    helm template test chart/ > rendered.yaml
    ```
-2. Executes `podman play kube rendered.yaml`, which:
+2. Executes `podman play kube rendered.yaml --publish-all`, which:
    - Reads the multi-document Kubernetes YAML (`Deployment`, `Service`).
    - Creates a local Podman pod matching the Kubernetes `Deployment` specification.
    - Applies the pod's `securityContext` (`runAsNonRoot: true`, capabilities drop, seccomp profile).
@@ -204,13 +202,13 @@ podman logs -f lab-service-pod-lab-service
 
 **Teardown:**
 ```sh
-mise run downplay
+mise run play-d
 # or: podman play kube rendered.yaml --down
 ```
 
 ---
 
-### Tier 3: Cluster Deployment & Testing on Talos Linux (`mise run helm-install`)
+### Tier 3: Cluster Deployment & Testing on Talos Linux (`mise run helm-i`)
 
 The final phase validates the workload on a live **Talos Linux** Kubernetes cluster. This tests real-world Pod Security Admission (PSA) enforcement, network routing, and container startup under production constraints.
 
@@ -234,8 +232,8 @@ kubectl get ns default --show-labels
 
 Run the linter and inspect the generated manifests before cluster deployment:
 ```sh
-mise run helm-lint
-mise run helm-template
+mise run helm-l
+mise run helm-t
 
 # Test OpenShift Route rendering
 helm template test chart/ --set ingress.enabled=true --set ingress.route="true"
@@ -245,7 +243,7 @@ helm template test chart/ --set ingress.enabled=true --set ingress.route="true"
 
 Install the Helm chart release:
 ```sh
-mise run helm-install
+mise run helm-i
 # or: helm install test chart/
 ```
 
@@ -282,7 +280,7 @@ curl http://localhost:8080
 
 When testing is complete, clean up the release:
 ```sh
-mise run helm-uninstall
+mise run helm-u
 # or: helm uninstall test
 ```
 
@@ -308,13 +306,13 @@ Run tasks with `mise run <task>`:
 | `compose` | Start local container stack with Podman Compose | `podman compose up -d` |
 | `down` | Stop local Podman Compose stack | `podman compose down` |
 | `logs` | View Podman Compose logs | `podman compose logs -f` |
-| `play` | Test Helm chart manifests locally with Podman Play Kube | `podman play kube rendered.yaml` |
-| `downplay` | Stop and remove Podman Play Kube pods | `podman play kube rendered.yaml --down` |
-| `helm-dep` | Build Helm chart dependencies | `helm dependency build chart/` |
-| `helm-lint` | Lint Helm chart | `helm lint chart/` |
-| `helm-template` | Render Helm chart templates to `rendered.yaml` | `helm template test chart/ > rendered.yaml` |
-| `helm-install` | Install Helm chart to current Kubernetes cluster | `helm install test chart/` |
-| `helm-uninstall` | Uninstall Helm chart release from cluster | `helm uninstall test` |
+| `play` | Test Helm chart manifests locally with Podman Play Kube | `podman play kube rendered.yaml --publish-all` |
+| `play-d` | Stop and remove Podman Play Kube pods | `podman play kube rendered.yaml --down` |
+| `helm-d` | Build Helm chart dependencies | `helm dependency build chart/` |
+| `helm-l` | Lint Helm chart | `helm lint chart/` |
+| `helm-t` | Render Helm chart templates to `rendered.yaml` | `helm template test chart/ > rendered.yaml` |
+| `helm-i` | Install Helm chart to current Kubernetes cluster | `helm install test chart/` |
+| `helm-u` | Uninstall Helm chart release from cluster | `helm uninstall test` |
 | `trivy-fs` | Scan repository filesystem for security vulnerabilities | `trivy fs .` |
 
 ---
