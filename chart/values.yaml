@@ -20,7 +20,7 @@ app:
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
-    fsGroup: 1031 # take this out if deploying to OpenShift
+    fsGroup: 1031
   tolerations:
     - key: "node-role.kubernetes.io/control-plane"
       operator: "Exists"
@@ -38,7 +38,6 @@ ingress:
   enabled: true
   name: lab-ingress
   host: "test.joeckr.dev" # add your own domain
-  route: "false"  # Set to "true" to generate an OpenShift Route instead of Ingress
   className: "nginx"
   path: /
   pathType: "Prefix"
