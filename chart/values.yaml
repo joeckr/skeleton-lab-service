@@ -1,8 +1,9 @@
 app:
   name: lab-service
-  image: nginxinc/nginx-unprivileged
-  tag: alpine
-  pullPolicy: Always
+  image:
+    repository: nginxinc/nginx-unprivileged
+    tag: alpine
+    pullPolicy: IfNotPresent
   replicaCount: 1
   port: 8080
   env: "lab"
