@@ -17,6 +17,7 @@ app:
     capabilities:
       drop:
         - ALL
+  podAnnotations: {}
   podSecurityContext:
     runAsNonRoot: true
     seccompProfile:
@@ -42,3 +43,10 @@ ingress:
   className: "nginx"
   path: /
   pathType: "Prefix"
+
+secret:
+  # Set create: true with data for chart-managed secrets, or provide existingSecret
+  # when managing secrets externally (e.g. External Secrets Operator).
+  create: false
+  existingSecret: ""
+  data: {}
