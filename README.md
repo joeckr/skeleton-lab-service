@@ -288,7 +288,8 @@ Run tasks with `mise run <task>`:
 
 | Task | Description | Command |
 |---|---|---|
-| `install` | Install tools and set up git hooks | `hk install --mise` |
+| `install` | Install tools, set up git hooks, and apply GitHub repo settings | `hk install --mise` (depends on `repo-settings`) |
+| `repo-settings` | Enable delete-branch-on-merge and auto-merge on GitHub via `gh` | `gh repo edit --delete-branch-on-merge --enable-auto-merge` |
 | `hk` (or `check`) | Run all linters and hook checks | `hk check --all` |
 | `compose` | Start local container stack with Podman Compose | `podman compose up -d` |
 | `down` | Stop local Podman Compose stack | `podman compose down` |
